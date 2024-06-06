@@ -15,6 +15,8 @@ public class AccountPage extends JFrame {
     private JTextField amountField;
     private JComboBox<String> categoryComboBox;
     private JTextArea descriptionArea;
+    private JTextField searchField;
+    private JButton searchButton;
 
     public AccountPage() {
         initializeUI();
@@ -22,7 +24,7 @@ public class AccountPage extends JFrame {
 
     private void initializeUI() {
         setTitle("記帳");
-        setSize(600, 400);
+        setSize(800, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -101,9 +103,23 @@ public class AccountPage extends JFrame {
         constraints.gridwidth = 2;
         panel.add(viewTotalButton, constraints);
 
+        JLabel searchLabel = new JLabel("搜尋:");
+        constraints.gridx = 0;
+        constraints.gridy = 7;
+        panel.add(searchLabel, constraints);
+
+        searchField = new JTextField(20);
+        constraints.gridx = 1;
+        panel.add(searchField, constraints);
+
+        searchButton = new JButton("搜尋");
+        constraints.gridx = 2;
+        panel.add(searchButton, constraints);
+
         submitButton.addActionListener(e -> submitRecord());
         viewRecordsButton.addActionListener(e -> viewRecords());
         viewTotalButton.addActionListener(e -> showTotalAmount());
+        searchButton.addActionListener(e -> searchRecords());
     }
 
     private void submitRecord() {
@@ -159,6 +175,19 @@ public class AccountPage extends JFrame {
 
         String message = "支出總額：￥" + totalExpense + "\n收入總額：￥" + totalIncome;
         JOptionPane.showMessageDialog(this, message, "支出和收入總額", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void searchRecords() {
+        String searchText = searchField.getText().toLowerCase();
+        ArrayList<Record> filteredRecords = new ArrayList<>();
+
+        for (Record record : records) {
+            if (record.getDescription().toLowerCase().contains(searchText)) {
+                filteredRecords.add(record);
+            }
+        }
+
+        new ViewRecordsPage(filteredRecords, this);
     }
 
     private void clearForm() {

@@ -56,6 +56,6 @@ public class Record {
 
     @Override
     public String toString() {
-        return date + "," + amount + "," + category + "," + description;
+        return date + ",類型:" + category + ",金額:" + amount + ",物品:" + description;
     }
 }
