@@ -282,12 +282,15 @@ class CourseDetailsDialog extends JDialog {
     private JTextField quizPercentageField;
     private JTextField attendanceField;
     private JTextField attendancePercentageField;
+    private JTextField projectField;
+    private JTextField projectPercentageField;
 
     private double savedMidtermScore;
     private double savedFinalScore;
     private double savedNormalScore;
     private double savedQuizScore;
     private double savedAttendanceScore;
+    private double savedProjectScore;
 
     public CourseDetailsDialog(String courseName) {
         setTitle(courseName + " 詳情");
@@ -335,6 +338,12 @@ class CourseDetailsDialog extends JDialog {
         attendancePercentageField.setPreferredSize(textFieldSize);
         addLabelAndField(panel, "出缺席成績:", attendanceField, "百分比:", attendancePercentageField, gbc, row++);
 
+        projectField = new JTextField();
+        projectPercentageField = new JTextField();
+        projectField.setPreferredSize(textFieldSize);
+        projectPercentageField.setPreferredSize(textFieldSize);
+        addLabelAndField(panel, "專題成績:", projectField, "百分比:", projectPercentageField, gbc, row++);
+
         // Add buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         JButton saveButton = new JButton("保存");
@@ -357,6 +366,7 @@ class CourseDetailsDialog extends JDialog {
                 total += getScore(normalField, normalPercentageField);
                 total += getScore(quizField, quizPercentageField);
                 total += getScore(attendanceField, attendancePercentageField);
+                total += getScore(projectField, projectPercentageField);
                 // Calculate remaining percentage for final exam
                 double finalPercentage = getPercentage(finalPercentageField);
 
@@ -433,6 +443,7 @@ class CourseDetailsDialog extends JDialog {
         savedNormalScore = normalField.getText().isEmpty() ? -1 : Double.parseDouble(normalField.getText());
         savedQuizScore = quizField.getText().isEmpty() ? -1 : Double.parseDouble(quizField.getText());
         savedAttendanceScore = attendanceField.getText().isEmpty() ? -1 : Double.parseDouble(attendanceField.getText());
+        savedProjectScore = projectField.getText().isEmpty() ? -1 : Double.parseDouble(projectField.getText());
     }
 
     private void viewScores() {
@@ -441,12 +452,14 @@ class CourseDetailsDialog extends JDialog {
             "期末成績: %s \n" +
             "平時成績: %s \n" +
             "小考成績: %s \n" +
-            "出缺席成績: %s \n",
+            "出缺席成績: %s \n"+
+            "專題成績: %s \n",
             formatScore(savedMidtermScore),
             formatScore(savedFinalScore),
             formatScore(savedNormalScore),
             formatScore(savedQuizScore),
-            formatScore(savedAttendanceScore)
+            formatScore(savedAttendanceScore),
+            formatScore(savedProjectScore)
         );
         JOptionPane.showMessageDialog(null, message);
     }
