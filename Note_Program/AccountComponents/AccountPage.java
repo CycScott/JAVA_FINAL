@@ -90,6 +90,7 @@ public class AccountPage extends JFrame {
         viewRecordsButton.addActionListener(e -> viewRecords());
     }
 
+    //Submit an account record
     private void submitRecord(JTextField dateField, JTextField amountField, JComboBox<String> categoryComboBox, JTextArea descriptionArea) {
         String dateText = dateField.getText();
         String amountText = amountField.getText();
@@ -113,11 +114,12 @@ public class AccountPage extends JFrame {
         }
     }
 
+    //Open new page that display all account record.
     private void viewRecords() {
-        // 打開一個新的窗口顯示最近的記錄
         new ViewRecordsPage(records);
     }
 
+    //Clear input field
     private void clearForm(JTextField amountField, JTextArea descriptionArea) {
         amountField.setText("");
         descriptionArea.setText("");
