@@ -5,6 +5,8 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class AccountPage extends JFrame {
@@ -116,10 +118,24 @@ public class AccountPage extends JFrame {
         constraints.gridx = 2;
         panel.add(searchButton, constraints);
 
+        JButton pieChartButton = new JButton("顯示支出比例餅圖");
+        constraints.gridx = 0;
+        constraints.gridy = 8;
+        constraints.gridwidth = 2;
+        panel.add(pieChartButton, constraints);
+
+        JButton barChartButton = new JButton("顯示月度收入和支出條形圖");
+        constraints.gridx = 0;
+        constraints.gridy = 9;
+        constraints.gridwidth = 2;
+        panel.add(barChartButton, constraints);
+
         submitButton.addActionListener(e -> submitRecord());
         viewRecordsButton.addActionListener(e -> viewRecords());
         viewTotalButton.addActionListener(e -> showTotalAmount());
         searchButton.addActionListener(e -> searchRecords());
+        pieChartButton.addActionListener(e -> showPieChart());
+        barChartButton.addActionListener(e -> showBarChart());
     }
 
     private void submitRecord() {
@@ -174,20 +190,62 @@ public class AccountPage extends JFrame {
         }
 
         String message = "支出總額：￥" + totalExpense + "\n收入總額：￥" + totalIncome;
-        JOptionPane.showMessageDialog(this, message, "支出和收入總額", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, message);
     }
 
     private void searchRecords() {
-        String searchText = searchField.getText().toLowerCase();
-        ArrayList<Record> filteredRecords = new ArrayList<>();
+        String query = searchField.getText().toLowerCase();
+        if (query.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "請輸入搜尋關鍵字！");
+            return;
+        }
 
+        ArrayList<Record> searchResults = new ArrayList<>();
         for (Record record : records) {
-            if (record.getDescription().toLowerCase().contains(searchText)) {
-                filteredRecords.add(record);
+            if (record.getDescription().toLowerCase().contains(query)) {
+                searchResults.add(record);
             }
         }
 
-        new ViewRecordsPage(filteredRecords, this);
+        if (searchResults.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "未找到符合條件的記錄！");
+        } else {
+            new ViewRecordsPage(searchResults, this);
+        }
+    }
+
+    private void showPieChart() {
+        Map<String, Double> data = new HashMap<>();
+        for (Record record : records) {
+            data.put(record.getCategory(), data.getOrDefault(record.getCategory(), 0.0) + record.getAmount());
+        }
+
+        JPanel chartPanel = ChartUtils.createPieChart(data, "支出比例餅圖");
+        JFrame chartFrame = new JFrame("餅圖");
+        chartFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        chartFrame.add(chartPanel);
+        chartFrame.pack();
+        chartFrame.setLocationRelativeTo(null);
+        chartFrame.setVisible(true);
+    }
+
+    private void showBarChart() {
+        Map<String, Map<String, Double>> data = new HashMap<>();
+        for (Record record : records) {
+            String month = record.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+            String category = record.getCategory();
+
+            data.putIfAbsent(category, new HashMap<>());
+            data.get(category).put(month, data.get(category).getOrDefault(month, 0.0) + record.getAmount());
+        }
+
+        JPanel chartPanel = ChartUtils.createBarChart(data, "月度收入和支出條形圖");
+        JFrame chartFrame = new JFrame("條形圖");
+        chartFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        chartFrame.add(chartPanel);
+        chartFrame.pack();
+        chartFrame.setLocationRelativeTo(null);
+        chartFrame.setVisible(true);
     }
 
     private void clearForm() {
@@ -197,23 +255,23 @@ public class AccountPage extends JFrame {
         descriptionArea.setText("");
     }
 
-    public void editRecord(UUID recordId) {
-        for (Record record : records) {
-            if (record.getId().equals(recordId)) {
-                // 使用記錄的數據填充表單
-                dateField.setText(record.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                amountField.setText(String.valueOf(record.getAmount()));
-                categoryComboBox.setSelectedItem(record.getCategory());
-                descriptionArea.setText(record.getDescription());
-                currentRecord = record;
-                break;
-            }
-        }
-    }
-
     public void deleteRecord(UUID recordId) {
         records.removeIf(record -> record.getId().equals(recordId));
         JOptionPane.showMessageDialog(this, "記錄已刪除！");
+        viewRecords();
+    }
+
+    public void editRecord(UUID id) {
+        for (Record record : records) {
+            if (record.getId().equals(id)) {
+                currentRecord = record;
+                dateField.setText(record.getDate().toString());
+                amountField.setText(String.valueOf(record.getAmount()));
+                categoryComboBox.setSelectedItem(record.getCategory());
+                descriptionArea.setText(record.getDescription());
+                break;
+            }
+        }
     }
 
     public static void main(String[] args) {
