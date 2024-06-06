@@ -140,6 +140,8 @@ class AddCourseDialog extends JDialog {
         courseNameField = new JTextField();
         panel.add(courseNameField);
 
+        // 新建一个按钮面板来居中放置按钮
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton addButton = new JButton("添加");
         addButton.addActionListener(new ActionListener() {
             @Override
@@ -153,11 +155,17 @@ class AddCourseDialog extends JDialog {
                 dispose();
             }
         });
-        panel.add(addButton);
+        buttonPanel.add(addButton);
 
-        add(panel);
+        // 使用Box布局管理器来实现垂直排列组件
+        Box box = Box.createVerticalBox();
+        box.add(panel);
+        box.add(buttonPanel);
+
+        add(box);
     }
 }
+
 
 class ViewCoursePage extends JFrame {
     private JPanel coursePanel;
@@ -212,7 +220,7 @@ class DeleteCourseDialog extends JDialog {
     private JComboBox<Integer> startPeriodComboBox;
     private JComboBox<Integer> endPeriodComboBox;
     private SchedulePage schedulePage;
-    private JTextField courseNameField; // 新增這一行
+    private JTextField courseNameField;
 
     public DeleteCourseDialog(SchedulePage schedulePage) {
         this.schedulePage = schedulePage;
@@ -220,7 +228,7 @@ class DeleteCourseDialog extends JDialog {
         setSize(300, 200);
         setLocationRelativeTo(schedulePage);
 
-        JPanel panel = new JPanel(new GridLayout(5, 2)); // 修改為 5 行
+        JPanel panel = new JPanel(new GridLayout(5, 2));
 
         panel.add(new JLabel("星期幾:"));
         String[] days = {"星期一", "星期二", "星期三", "星期四", "星期五"};
@@ -236,10 +244,12 @@ class DeleteCourseDialog extends JDialog {
         endPeriodComboBox = new JComboBox<>(periods);
         panel.add(endPeriodComboBox);
 
-        panel.add(new JLabel("課程名稱:")); // 新增這一行
-        courseNameField = new JTextField(); // 新增這一行
-        panel.add(courseNameField); // 新增這一行
+        panel.add(new JLabel("課程名稱:"));
+        courseNameField = new JTextField();
+        panel.add(courseNameField);
 
+        // 新建一个按钮面板来居中放置按钮
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton deleteButton = new JButton("刪除");
         deleteButton.addActionListener(new ActionListener() {
             @Override
@@ -247,28 +257,34 @@ class DeleteCourseDialog extends JDialog {
                 int dayOfWeek = dayOfWeekComboBox.getSelectedIndex() + 1;
                 int startPeriod = (int) startPeriodComboBox.getSelectedItem() - 1;
                 int endPeriod = (int) endPeriodComboBox.getSelectedItem() - 1;
-                String courseName = courseNameField.getText(); // 獲取課程名稱
+                String courseName = courseNameField.getText();
 
                 System.out.println("Deleting course: " + courseName);
                 System.out.println("Day of Week: " + dayOfWeek);
                 System.out.println("Start Period: " + startPeriod);
                 System.out.println("End Period: " + endPeriod);
 
-                schedulePage.deleteCourse(dayOfWeek, startPeriod, endPeriod, courseName); // 修改這一行
+                schedulePage.deleteCourse(dayOfWeek, startPeriod, endPeriod, courseName);
                 if (schedulePage.viewCoursePage != null) {
                     System.out.println("viewCoursePage is not null. Removing course button.");
-                    schedulePage.viewCoursePage.removeCourseButton(courseName); // 刪除按鈕
+                    schedulePage.viewCoursePage.removeCourseButton(courseName);
                 } else {
                     System.out.println("viewCoursePage is null.");
                 }
                 dispose();
             }
         });
-        panel.add(deleteButton);
+        buttonPanel.add(deleteButton);
 
-        add(panel);
+        // 使用Box布局管理器来实现垂直排列组件
+        Box box = Box.createVerticalBox();
+        box.add(panel);
+        box.add(buttonPanel);
+
+        add(box);
     }
 }
+
 
 
 class CourseDetailsDialog extends JDialog {
