@@ -127,8 +127,11 @@ public class AccountPage extends JFrame {
                 records.add(record);
                 JOptionPane.showMessageDialog(this, "記錄已保存！");
             } else {
-                // 編輯現有記錄
-                currentRecord = new Record(date, amount, category, description); // 更新現有記錄
+                // 更新現有記錄
+                currentRecord.setDate(date);
+                currentRecord.setAmount(amount);
+                currentRecord.setCategory(category);
+                currentRecord.setDescription(description);
                 JOptionPane.showMessageDialog(this, "記錄已更新！");
                 currentRecord = null; // 清除編輯模式
             }
