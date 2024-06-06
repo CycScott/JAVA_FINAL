@@ -9,51 +9,93 @@ public class AccountPage extends JFrame {
     private static final String RECORDS_FILE = "records.txt";
 
     public AccountPage() {
+        initializeUI();
+    }
+
+    private void initializeUI() {
         setTitle("記帳");
         setSize(400, 300);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(4, 2));
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.insets = new Insets(5, 5, 5, 5);
 
-        panel.add(new JLabel("日期:"));
-        JTextField dateField = new JTextField();
-        dateField.setEditable(false);
-        dateField.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        panel.add(dateField);
-
-        panel.add(new JLabel("金額:"));
-        JTextField amountField = new JTextField();
-        panel.add(amountField);
-
-        panel.add(new JLabel("類別:"));
-        JComboBox<String> categoryComboBox = new JComboBox<>(new String[]{"支出", "收入"});
-        panel.add(categoryComboBox);
-
-        panel.add(new JLabel("描述:"));
-        JTextArea descriptionArea = new JTextArea();
-        panel.add(descriptionArea);
-
-        JButton submitButton = new JButton("提交");
-        submitButton.addActionListener(e -> {
-            String date = dateField.getText();
-            String amount = amountField.getText();
-            String category = (String) categoryComboBox.getSelectedItem();
-            String description = descriptionArea.getText();
-
-            // 保存記錄
-            saveRecord(date, amount, category, description);
-
-            // 清空表單
-            amountField.setText("");
-            descriptionArea.setText("");
-        });
-        panel.add(submitButton);
+        addComponents(panel, constraints);
 
         add(panel);
-
         setVisible(true);
+    }
+
+    private void addComponents(JPanel panel, GridBagConstraints constraints) {
+        JLabel dateLabel = new JLabel("日期:");
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        panel.add(dateLabel, constraints);
+
+        JTextField dateField = new JTextField(20);
+        dateField.setEditable(false);
+        dateField.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        constraints.gridx = 1;
+        panel.add(dateField, constraints);
+
+        JLabel amountLabel = new JLabel("金額:");
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        panel.add(amountLabel, constraints);
+
+        JTextField amountField = new JTextField(20);
+        constraints.gridx = 1;
+        panel.add(amountField, constraints);
+
+        JLabel categoryLabel = new JLabel("類別:");
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        panel.add(categoryLabel, constraints);
+
+        JComboBox<String> categoryComboBox = new JComboBox<>(new String[]{"支出", "收入"});
+        constraints.gridx = 1;
+        panel.add(categoryComboBox, constraints);
+
+        JLabel descriptionLabel = new JLabel("描述:");
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        panel.add(descriptionLabel, constraints);
+
+        JTextArea descriptionArea = new JTextArea(4, 20);
+        JScrollPane scrollPane = new JScrollPane(descriptionArea);
+        constraints.gridx = 1;
+        panel.add(scrollPane, constraints);
+
+        JButton submitButton = new JButton("提交");
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.gridwidth = 2;
+        constraints.anchor = GridBagConstraints.CENTER;
+        panel.add(submitButton, constraints);
+
+        submitButton.addActionListener(e -> submitRecord(dateField, amountField, categoryComboBox, descriptionArea));
+    }
+
+    private void submitRecord(JTextField dateField, JTextField amountField, JComboBox<String> categoryComboBox, JTextArea descriptionArea) {
+        String date = dateField.getText();
+        String amount = amountField.getText();
+        String category = (String) categoryComboBox.getSelectedItem();
+        String description = descriptionArea.getText();
+
+        if (amount.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "請輸入金額！", "錯誤", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        saveRecord(date, amount, category, description);
+
+        // 清空表單
+        amountField.setText("");
+        descriptionArea.setText("");
     }
 
     private void saveRecord(String date, String amount, String category, String description) {
