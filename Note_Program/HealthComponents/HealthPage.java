@@ -1,3 +1,4 @@
+package HealthComponents;
 import javax.swing.*;
 import java.awt.*;
 

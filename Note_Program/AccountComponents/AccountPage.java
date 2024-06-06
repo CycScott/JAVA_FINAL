@@ -1,4 +1,9 @@
+package AccountComponents;
 import javax.swing.*;
+
+import AccountComponents.Resourse.Record;
+import AccountComponents.Resourse.ViewRecordsPage;
+
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

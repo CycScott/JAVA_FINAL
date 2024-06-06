@@ -1,3 +1,4 @@
+package DiaryComponents;
 import javax.swing.*;
 import java.awt.*;
 

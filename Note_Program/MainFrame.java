@@ -1,4 +1,11 @@
 import javax.swing.*;
+
+import AccountComponents.AccountPage;
+import DiaryComponents.DiaryPage;
+import DietComponents.DietPage;
+import HealthComponents.HealthPage;
+import ScheduleComponents.SchedulePage;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

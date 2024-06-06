@@ -1,3 +1,4 @@
+package ScheduleComponents;
 import javax.swing.*;
 import java.awt.*;
 
