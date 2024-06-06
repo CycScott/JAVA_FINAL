@@ -1,7 +1,9 @@
 # JAVA_FINAL
-JAVA_FINAL
 
-介面
+### structure JAVA_FINAL
+
+#### 介面
+
 主頁
 
 記帳
@@ -12,9 +14,13 @@ JAVA_FINAL
 
 日記
 
-健康紀錄1
+健康紀錄
 
 測試
 
-javac -encoding UTF-8 MainFrame.java
+### Execution command :  
+
+javac -encoding UTF-8 MainFrame.java  
 java MainFrame
+
+Use this commmand to build program if encounter encoding problem.
