@@ -1,22 +1,14 @@
 # JAVA_FINAL
 
-### structure JAVA_FINAL
+### Structure JAVA_FINAL
 
 #### 介面
-
 主頁
-
-記帳
-
-飲食紀錄
-
-課表
-
-日記
-
-健康紀錄
-
-測試
+|-記帳
+|-飲食紀錄
+|-課表
+|-日記
+|-健康紀錄
 
 ### Execution command :  
 
