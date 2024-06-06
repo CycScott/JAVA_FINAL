@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 public class MainFrame extends JFrame {
     public MainFrame() {
         setTitle("JAVA_FINAL");
-        setSize(400, 300);
+        setSize(600, 400); // 調整主頁面大小
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
