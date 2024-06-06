@@ -5,12 +5,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class SchedulePage extends JFrame {
     private JTable table;
     private Object[][] data;
     private String[] columnNames = {"時間","星期一", "星期二", "星期三", "星期四", "星期五"};
-    private ViewCoursePage viewCoursePage; // 新增這一行
+    public ViewCoursePage viewCoursePage; // 修改這一行
 
     public SchedulePage() {
         setTitle("課表");
@@ -92,9 +93,11 @@ public class SchedulePage extends JFrame {
         }
     }
 
-    public void deleteCourse(int dayOfWeek, int startPeriod, int endPeriod) {
+    public void deleteCourse(int dayOfWeek, int startPeriod, int endPeriod, String courseName) { // 修改這一行
         for (int i = startPeriod; i <= endPeriod; i++) {
-            data[i][dayOfWeek] = "";
+            if (data[i][dayOfWeek].equals(courseName)) { // 確認課程名稱匹配
+                data[i][dayOfWeek] = "";
+            }
         }
         table.repaint();
     }
@@ -156,53 +159,6 @@ class AddCourseDialog extends JDialog {
     }
 }
 
-
-class DeleteCourseDialog extends JDialog {
-    private JComboBox<String> dayOfWeekComboBox;
-    private JComboBox<Integer> startPeriodComboBox;
-    private JComboBox<Integer> endPeriodComboBox;
-    private SchedulePage schedulePage;
-
-    public DeleteCourseDialog(SchedulePage schedulePage) {
-        this.schedulePage = schedulePage;
-        setTitle("刪除課程");
-        setSize(300, 200);
-        setLocationRelativeTo(schedulePage);
-
-        JPanel panel = new JPanel(new GridLayout(4, 2));
-
-        panel.add(new JLabel("星期幾:"));
-        String[] days = {"星期一", "星期二", "星期三", "星期四", "星期五"};
-        dayOfWeekComboBox = new JComboBox<>(days);
-        panel.add(dayOfWeekComboBox);
-
-        panel.add(new JLabel("開始節:"));
-        Integer[] periods = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
-        startPeriodComboBox = new JComboBox<>(periods);
-        panel.add(startPeriodComboBox);
-
-        panel.add(new JLabel("結束節:"));
-        endPeriodComboBox = new JComboBox<>(periods);
-        panel.add(endPeriodComboBox);
-
-        JButton deleteButton = new JButton("刪除");
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int dayOfWeek = dayOfWeekComboBox.getSelectedIndex() + 1;
-                int startPeriod = (int) startPeriodComboBox.getSelectedItem() - 1;
-                int endPeriod = (int) endPeriodComboBox.getSelectedItem() - 1;
-
-                schedulePage.deleteCourse(dayOfWeek, startPeriod, endPeriod);
-                dispose();
-            }
-        });
-        panel.add(deleteButton);
-
-        add(panel);
-    }
-}
-
 class ViewCoursePage extends JFrame {
     private JPanel coursePanel;
     private ArrayList<JButton> courseButtons; // 用於保存課程按鈕
@@ -237,10 +193,12 @@ class ViewCoursePage extends JFrame {
     }
 
     public void removeCourseButton(String courseName) {
-        for (JButton button : courseButtons) {
+        Iterator<JButton> iterator = courseButtons.iterator(); // 使用迭代器來避免ConcurrentModificationException
+        while (iterator.hasNext()) {
+            JButton button = iterator.next();
             if (button.getText().equals(courseName)) {
                 coursePanel.remove(button);
-                courseButtons.remove(button);
+                iterator.remove();
                 coursePanel.revalidate();
                 coursePanel.repaint();
                 break;
@@ -291,9 +249,17 @@ class DeleteCourseDialog extends JDialog {
                 int endPeriod = (int) endPeriodComboBox.getSelectedItem() - 1;
                 String courseName = courseNameField.getText(); // 獲取課程名稱
 
-                schedulePage.deleteCourse(dayOfWeek, startPeriod, endPeriod);
+                System.out.println("Deleting course: " + courseName);
+                System.out.println("Day of Week: " + dayOfWeek);
+                System.out.println("Start Period: " + startPeriod);
+                System.out.println("End Period: " + endPeriod);
+
+                schedulePage.deleteCourse(dayOfWeek, startPeriod, endPeriod, courseName); // 修改這一行
                 if (schedulePage.viewCoursePage != null) {
+                    System.out.println("viewCoursePage is not null. Removing course button.");
                     schedulePage.viewCoursePage.removeCourseButton(courseName); // 刪除按鈕
+                } else {
+                    System.out.println("viewCoursePage is null.");
                 }
                 dispose();
             }
@@ -303,6 +269,7 @@ class DeleteCourseDialog extends JDialog {
         add(panel);
     }
 }
+
 
 class CourseDetailsDialog extends JDialog {
     private JTextField midtermField;
