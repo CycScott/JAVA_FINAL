@@ -1,5 +1,6 @@
 package HealthComponents;
 
+import java.time.LocalDate;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -199,6 +200,25 @@ public class HealthPage extends JFrame {
 
         add(panel);
         setVisible(true);
+        
+        LocalDate today = LocalDate.now();  
+        System.out.println(today);
+        // submitButton 的 Click 事件
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                LocalDate today = LocalDate.now(); // 檔名
+                String str = textArea.getText();   // 內文
+
+            }
+        });
+        // Button 的Click 事件
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textArea.setText("");
+            }
+        });
     }
 
     public static void main(String[] args) {
