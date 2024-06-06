@@ -14,7 +14,7 @@ public class AccountPage extends JFrame {
 
     private void initializeUI() {
         setTitle("記帳");
-        setSize(400, 300);
+        setSize(600, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -35,62 +35,70 @@ public class AccountPage extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 0;
         panel.add(dateLabel, constraints);
-
+    
         JTextField dateField = new JTextField(20);
         dateField.setEditable(false);
         dateField.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         constraints.gridx = 1;
         panel.add(dateField, constraints);
-
+    
         JLabel amountLabel = new JLabel("金額:");
         constraints.gridx = 0;
         constraints.gridy = 1;
         panel.add(amountLabel, constraints);
-
+    
         JTextField amountField = new JTextField(20);
         constraints.gridx = 1;
         panel.add(amountField, constraints);
-
+    
         JLabel categoryLabel = new JLabel("類別:");
         constraints.gridx = 0;
         constraints.gridy = 2;
         panel.add(categoryLabel, constraints);
-
+    
         JComboBox<String> categoryComboBox = new JComboBox<>(new String[]{"支出", "收入"});
         constraints.gridx = 1;
         panel.add(categoryComboBox, constraints);
-
+    
         JLabel descriptionLabel = new JLabel("描述:");
         constraints.gridx = 0;
         constraints.gridy = 3;
         panel.add(descriptionLabel, constraints);
-
+    
         JTextArea descriptionArea = new JTextArea(4, 20);
         JScrollPane scrollPane = new JScrollPane(descriptionArea);
         constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.fill = GridBagConstraints.BOTH; // 添加這一行以填充整個區域
         panel.add(scrollPane, constraints);
-
+    
         JButton submitButton = new JButton("提交");
         constraints.gridx = 0;
         constraints.gridy = 4;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.CENTER;
         panel.add(submitButton, constraints);
-
+    
         JButton viewRecordsButton = new JButton("查看最近的記錄");
         constraints.gridx = 0;
         constraints.gridy = 5;
+        constraints.gridwidth = 2;
         panel.add(viewRecordsButton, constraints);
-
+    
         JButton viewTotalButton = new JButton("顯示支出和收入總額");
         constraints.gridx = 0;
         constraints.gridy = 6;
+        constraints.gridwidth = 2;
         panel.add(viewTotalButton, constraints);
-
+    
         submitButton.addActionListener(e -> submitRecord(dateField, amountField, categoryComboBox, descriptionArea));
         viewRecordsButton.addActionListener(e -> viewRecords());
         viewTotalButton.addActionListener(e -> showTotalAmount());
     }
+    
+    
 
     private void submitRecord(JTextField dateField, JTextField amountField, JComboBox<String> categoryComboBox, JTextArea descriptionArea) {
         String dateText = dateField.getText();
