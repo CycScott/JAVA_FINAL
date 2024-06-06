@@ -14,10 +14,7 @@ JAVA_FINAL
 
 健康紀錄1
 
-<<<<<<< Updated upstream
 測試
-=======
 
-測試1
->>>>>>> Stashed changes
-
+javac -encoding UTF-8 MainFrame.java
+java MainFrame
