@@ -68,13 +68,11 @@ public class SchedulePage extends JFrame {
                 new DeleteCourseDialog(SchedulePage.this).setVisible(true);
             }
         });
-
+        
+        viewCoursePage = new ViewCoursePage();
         viewButton.addActionListener(new ActionListener() { // 新增這一段
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (viewCoursePage == null) {
-                    viewCoursePage = new ViewCoursePage();
-                }
                 viewCoursePage.setVisible(true);
             }
         });
