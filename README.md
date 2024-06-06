@@ -1,6 +1,6 @@
 # JAVA_FINAL
 
-### Structure JAVA_FINAL
+### Structure :
 
 #### 介面
 主頁  
@@ -10,7 +10,7 @@
 |-日記  
 |-健康紀錄  
 
-### Execution command :  
+### Execution command :
 
 javac -encoding UTF-8 MainFrame.java  
 java MainFrame
