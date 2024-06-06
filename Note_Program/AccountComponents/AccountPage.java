@@ -1,9 +1,4 @@
-package AccountComponents;
 import javax.swing.*;
-
-import AccountComponents.Resourse.Record;
-import AccountComponents.Resourse.ViewRecordsPage;
-
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -86,11 +81,16 @@ public class AccountPage extends JFrame {
         constraints.gridy = 5;
         panel.add(viewRecordsButton, constraints);
 
+        JButton viewTotalButton = new JButton("顯示支出和收入總額");
+        constraints.gridx = 0;
+        constraints.gridy = 6;
+        panel.add(viewTotalButton, constraints);
+
         submitButton.addActionListener(e -> submitRecord(dateField, amountField, categoryComboBox, descriptionArea));
         viewRecordsButton.addActionListener(e -> viewRecords());
+        viewTotalButton.addActionListener(e -> showTotalAmount());
     }
 
-    //Submit an account record
     private void submitRecord(JTextField dateField, JTextField amountField, JComboBox<String> categoryComboBox, JTextArea descriptionArea) {
         String dateText = dateField.getText();
         String amountText = amountField.getText();
@@ -114,12 +114,27 @@ public class AccountPage extends JFrame {
         }
     }
 
-    //Open new page that display all account record.
     private void viewRecords() {
+        // 打開一個新的窗口顯示最近的記錄
         new ViewRecordsPage(records);
     }
 
-    //Clear input field
+    private void showTotalAmount() {
+        double totalIncome = 0;
+        double totalExpense = 0;
+
+        for (Record record : records) {
+            if (record.getCategory().equals("支出")) {
+                totalExpense += record.getAmount();
+            } else {
+                totalIncome += record.getAmount();
+            }
+        }
+
+        String message = "支出總額：￥" + totalExpense + "\n收入總額：￥" + totalIncome;
+        JOptionPane.showMessageDialog(this, message, "支出和收入總額", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private void clearForm(JTextField amountField, JTextArea descriptionArea) {
         amountField.setText("");
         descriptionArea.setText("");

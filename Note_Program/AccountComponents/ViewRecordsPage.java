@@ -1,4 +1,4 @@
-package AccountComponents.Resourse;
+package AccountComponents;
 import javax.swing.*;
 
 import java.awt.*;

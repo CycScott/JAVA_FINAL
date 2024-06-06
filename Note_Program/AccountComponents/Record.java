@@ -1,4 +1,4 @@
-package AccountComponents.Resourse;
+package AccountComponents;
 import java.time.LocalDate;
 
 public class Record {
