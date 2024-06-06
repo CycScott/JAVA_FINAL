@@ -1,12 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 public class AccountPage extends JFrame {
-    private static final String RECORDS_FILE = "records.txt";
+    private ArrayList<Record> records = new ArrayList<>();
 
     public AccountPage() {
         initializeUI();
@@ -77,35 +76,49 @@ public class AccountPage extends JFrame {
         constraints.anchor = GridBagConstraints.CENTER;
         panel.add(submitButton, constraints);
 
+        JButton viewRecordsButton = new JButton("查看最近的記錄");
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        panel.add(viewRecordsButton, constraints);
+
         submitButton.addActionListener(e -> submitRecord(dateField, amountField, categoryComboBox, descriptionArea));
+        viewRecordsButton.addActionListener(e -> viewRecords());
     }
 
     private void submitRecord(JTextField dateField, JTextField amountField, JComboBox<String> categoryComboBox, JTextArea descriptionArea) {
-        String date = dateField.getText();
-        String amount = amountField.getText();
+        String dateText = dateField.getText();
+        String amountText = amountField.getText();
         String category = (String) categoryComboBox.getSelectedItem();
         String description = descriptionArea.getText();
 
-        if (amount.isEmpty()) {
+        if (amountText.isEmpty()) {
             JOptionPane.showMessageDialog(this, "請輸入金額！", "錯誤", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        saveRecord(date, amount, category, description);
+        try {
+            double amount = Double.parseDouble(amountText);
+            LocalDate date = LocalDate.parse(dateText, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            Record record = new Record(date, amount, category, description);
+            records.add(record);
+            JOptionPane.showMessageDialog(this, "記錄已保存！");
+            clearForm(amountField, descriptionArea);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "金額格式不正確！", "錯誤", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-        // 清空表單
+    private void viewRecords() {
+        // 打開一個新的窗口顯示最近的記錄
+        new ViewRecordsPage(records);
+    }
+
+    private void clearForm(JTextField amountField, JTextArea descriptionArea) {
         amountField.setText("");
         descriptionArea.setText("");
     }
 
-    private void saveRecord(String date, String amount, String category, String description) {
-        try (FileWriter writer = new FileWriter(RECORDS_FILE, true)) {
-            writer.write(date + "," + amount + "," + category + "," + description + "\n");
-            writer.flush();
-            JOptionPane.showMessageDialog(this, "記錄已保存！");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "保存記錄時出現錯誤：" + ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
-        }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(AccountPage::new);
     }
 }
