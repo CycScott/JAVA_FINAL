@@ -13,6 +13,7 @@ public class DiaryPage extends JFrame {
     JTextArea diaryArea = new JTextArea(10, 20);
     JTextArea diaryTitle = new JTextArea(2, 20);
     JButton submitButton = new JButton("儲存");
+    JButton deleteButton = new JButton("刪除");
     JList<String> explorer = new JList<>();
     JScrollPane explorerScroller = new JScrollPane(explorer);
     
@@ -59,6 +60,9 @@ public class DiaryPage extends JFrame {
         _constraints.anchor = GridBagConstraints.LAST_LINE_END;
         _panel.add(submitButton, _constraints);
 
+        _constraints.gridx = 3;
+        _panel.add(deleteButton, _constraints);
+
 
         explorerScroller.setPreferredSize(new Dimension(150, 200));
         _constraints.gridx = 0;
@@ -80,6 +84,7 @@ public class DiaryPage extends JFrame {
 
         submitButton.addActionListener(e -> submitDiary(diaryTitle,diaryArea));
         explorer.addListSelectionListener(e -> diarySelected());
+        deleteButton.addActionListener(e -> deleteSelected());
     }
 
     public void updateExplorer(){
@@ -111,6 +116,30 @@ public class DiaryPage extends JFrame {
         updateExplorer();
         diaryTitle.setText("");
         diaryArea.setText("");
+    }
+
+    public void deleteSelected(){
+        if(explorer.getSelectedValue()!=null){
+            if(explorer.getSelectedValue().equals("New...")){
+                return;
+            }
+            else if(!explorer.getSelectedValue().equals(null)){
+                if(JOptionPane.showConfirmDialog(this, "將要刪除"+explorer.getSelectedValue()+"!", "注意",JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE)
+                == JOptionPane.YES_OPTION){
+                    for(Diary dry : DiaryList){
+                        if(dry.getTitle().equals(explorer.getSelectedValue())){
+                            DiaryList.remove(dry);
+                            dry = null;
+                            System.gc();
+                            saveData();
+                            updateExplorer();
+                            diaryTitle.setText("");
+                            diaryArea.setText("");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void diarySelected(){
