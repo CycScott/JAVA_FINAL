@@ -6,20 +6,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
+import javax.swing.table.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.File;
+import java.io.IOException;
 
 public class SchedulePage extends JFrame {
     private JTable table;
     private Object[][] data;
     private String[] columnNames = {"時間", "星期一", "星期二", "星期三", "星期四", "星期五"};
+    private DefaultTableModel model;
     public ViewCoursePage viewCoursePage;
 
     public SchedulePage() {
         setTitle("課表");
-        setSize(700, 500); // 調整子頁面大小，以適應圖片和表格
+        setSize(604, 500); // 調整子頁面大小，以適應圖片和表格
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -41,20 +47,27 @@ public class SchedulePage extends JFrame {
             {"", "", "", "", "", ""} // 新增一行用來放置圖片
         };
 
-        DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        model = new DefaultTableModel(data, columnNames);
         table = new JTable(model) {
             @Override
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component c = super.prepareRenderer(renderer, row, column);
-                if (row == getRowCount() - 1 && column == getColumnCount() - 1) {
-                    // 设定右下角单元格的特殊高度
-                    ((JComponent) c).setPreferredSize(new Dimension(c.getWidth(), 100));
-                }
                 return c;
             }
         };
-        table.setRowHeight(14, 100); // 设置最后一行的高度
+
+        // 设置最后一行的高度
+        table.setRowHeight(14, 100); // 这一行只在初始化时执行
         table.setDefaultRenderer(Object.class, new CustomCellRenderer());
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+        // 设置每一列的宽度
+        int[] columnWidths = {100, 100, 100, 100, 100, 100};
+        for (int i = 0; i < columnWidths.length; i++) {
+            TableColumn column = table.getColumnModel().getColumn(i);
+            column.setPreferredWidth(columnWidths[i]);
+        }
+
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
 
@@ -102,9 +115,10 @@ public class SchedulePage extends JFrame {
 
     public void addCourse(int dayOfWeek, int startPeriod, int endPeriod, String courseName) {
         for (int i = startPeriod; i <= endPeriod; i++) {
-            data[i][dayOfWeek] = courseName;
+            model.setValueAt(courseName, i, dayOfWeek);
         }
-        table.repaint();
+        model.fireTableDataChanged();
+        table.setRowHeight(14, 100); // 确保最后一行的高度不会被改变
 
         if (viewCoursePage != null) {
             viewCoursePage.addCourseButton(courseName);
@@ -113,11 +127,12 @@ public class SchedulePage extends JFrame {
 
     public void deleteCourse(int dayOfWeek, int startPeriod, int endPeriod, String courseName) {
         for (int i = startPeriod; i <= endPeriod; i++) {
-            if (data[i][dayOfWeek].equals(courseName)) {
-                data[i][dayOfWeek] = "";
+            if (courseName.equals(model.getValueAt(i, dayOfWeek))) {
+                model.setValueAt("", i, dayOfWeek);
             }
         }
-        table.repaint();
+        model.fireTableDataChanged();
+        table.setRowHeight(14, 100); // 确保最后一行的高度不会被改变
     }
 
     public static void main(String[] args) {
@@ -135,6 +150,7 @@ public class SchedulePage extends JFrame {
             // 在右下角单元格显示图片
             if (row == table.getRowCount() - 1 && column == table.getColumnCount() - 1) {
                 JLabel label = new JLabel();
+                label.setHorizontalAlignment(JLabel.CENTER); // 设置居中对齐
                 try {
                     ImageIcon imageIcon = new ImageIcon("images.jpeg"); // 图片的路径
                     Image image = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
@@ -148,7 +164,6 @@ public class SchedulePage extends JFrame {
         }
     }
 }
-
 
 class AddCourseDialog extends JDialog {
     private JComboBox<String> dayOfWeekComboBox;
@@ -330,6 +345,7 @@ class DeleteCourseDialog extends JDialog {
 
 
 
+
 class CourseDetailsDialog extends JDialog {
     private JTextField midtermField;
     private JTextField midtermPercentageField;
@@ -350,6 +366,18 @@ class CourseDetailsDialog extends JDialog {
     private double savedQuizScore;
     private double savedAttendanceScore;
     private double savedProjectScore;
+
+    private void playSound(String soundFileName) {
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(soundFileName));
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+        } catch (Exception ex) {
+            System.out.println("Error with playing sound.");
+            ex.printStackTrace();
+        }
+    }
 
     public CourseDetailsDialog(String courseName) {
         setTitle(courseName + " 詳情");
@@ -432,11 +460,15 @@ class CourseDetailsDialog extends JDialog {
                 // Calculate needed score for final exam
                 double neededFinalScore = (60 - total) / (finalPercentage / 100);
                 if (neededFinalScore < 0) {
+                    playSound("success.wav"); 
                     JOptionPane.showMessageDialog(null, "只能說你嘎嘎亂過");
+                    
                 } else if (neededFinalScore <= 100) {
                     JOptionPane.showMessageDialog(null, "你期末需要考 " + neededFinalScore + " 分才會過");
+                    playSound("success.wav"); 
                 } else {
                     JOptionPane.showMessageDialog(null, "你期末需要神才會過");
+                    playSound("success.wav"); 
                 }
 
             }
