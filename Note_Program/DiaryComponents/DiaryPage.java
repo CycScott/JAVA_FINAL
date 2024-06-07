@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class DiaryPage extends JFrame {
     ArrayList<Diary> DiaryList;
-    private static final String DIARY_FILE = "Note_Program/DiaryComponents/dairys.dat";
+    private static final String DIARY_FILE = "Note_Program/DiaryComponents/Resource/dairys.dat";
     DefaultListModel<String> DiaryListModel = new DefaultListModel<>();
 
     JLabel titleLabel = new JLabel("標題: ");
