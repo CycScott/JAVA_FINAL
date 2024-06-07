@@ -118,13 +118,13 @@ public class AccountPage extends JFrame {
         constraints.gridx = 2;
         panel.add(searchButton, constraints);
 
-        JButton pieChartButton = new JButton("顯示支出比例餅圖");
+        JButton pieChartButton = new JButton("顯示圓餅圖");
         constraints.gridx = 0;
         constraints.gridy = 8;
         constraints.gridwidth = 2;
         panel.add(pieChartButton, constraints);
 
-        JButton barChartButton = new JButton("顯示月度收入和支出條形圖");
+        JButton barChartButton = new JButton("顯示月度收入和支出長條圖");
         constraints.gridx = 0;
         constraints.gridy = 9;
         constraints.gridwidth = 2;
@@ -189,7 +189,7 @@ public class AccountPage extends JFrame {
             }
         }
 
-        String message = "支出總額：￥" + totalExpense + "\n收入總額：￥" + totalIncome;
+        String message = "支出總額：￥" + totalExpense + "\n收入總額：￥" + totalIncome + "\n淨收入 ：￥"+(totalIncome-totalExpense);
         JOptionPane.showMessageDialog(this, message);
     }
 
@@ -215,12 +215,33 @@ public class AccountPage extends JFrame {
     }
 
     private void showPieChart() {
-        Map<String, Double> data = new HashMap<>();
+        double totalIncome = 0;
+        double totalExpense = 0;
+        Map<String, Double> incomeData = new HashMap<>();
+        Map<String, Double> expenseData = new HashMap<>();
+    
         for (Record record : records) {
-            data.put(record.getCategory(), data.getOrDefault(record.getCategory(), 0.0) + record.getAmount());
+            if (record.getCategory().equals("支出")) {
+                totalExpense += record.getAmount();
+                expenseData.put(record.getDescription(), expenseData.getOrDefault(record.getDescription(), 0.0) + record.getAmount());
+            } else {
+                totalIncome += record.getAmount();
+                incomeData.put(record.getDescription(), incomeData.getOrDefault(record.getDescription(), 0.0) + record.getAmount());
+            }
         }
-
-        JPanel chartPanel = ChartUtils.createPieChart(data, "支出比例餅圖");
+    
+        Map<String, Double> dataToShow;
+        String title;
+    
+        if (totalIncome > totalExpense) {
+            dataToShow = incomeData;
+            title = "收入比例餅圖";
+        } else {
+            dataToShow = expenseData;
+            title = "支出比例餅圖";
+        }
+    
+        JPanel chartPanel = ChartUtils.createPieChart(dataToShow, title);
         JFrame chartFrame = new JFrame("餅圖");
         chartFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         chartFrame.add(chartPanel);
@@ -228,6 +249,7 @@ public class AccountPage extends JFrame {
         chartFrame.setLocationRelativeTo(null);
         chartFrame.setVisible(true);
     }
+    
 
     private void showBarChart() {
         Map<String, Map<String, Double>> data = new HashMap<>();
