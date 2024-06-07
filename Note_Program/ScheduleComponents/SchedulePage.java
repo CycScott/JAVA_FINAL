@@ -15,6 +15,11 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import java.io.File;
 import java.io.IOException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.sound.sampled.*;
+
+
 
 public class SchedulePage extends JFrame {
     private JTable table;
@@ -367,15 +372,19 @@ class CourseDetailsDialog extends JDialog {
     private double savedAttendanceScore;
     private double savedProjectScore;
 
-    private void playSound(String soundFileName) {
+    private Clip clip;
+
+    private Clip playSound(String soundFileName) {
         try {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(soundFileName));
             Clip clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.start();
+            return clip;
         } catch (Exception ex) {
             System.out.println("Error with playing sound.");
             ex.printStackTrace();
+            return null;
         }
     }
 
@@ -460,17 +469,27 @@ class CourseDetailsDialog extends JDialog {
                 // Calculate needed score for final exam
                 double neededFinalScore = (60 - total) / (finalPercentage / 100);
                 if (neededFinalScore < 0) {
-                    playSound("success.wav"); 
+                    clip = playSound("success.wav");
                     JOptionPane.showMessageDialog(null, "只能說你嘎嘎亂過");
-                    
-                } else if (neededFinalScore <= 100) {
-                    JOptionPane.showMessageDialog(null, "你期末需要考 " + neededFinalScore + " 分才會過");
-                    playSound("success.wav"); 
-                } else {
+                    if (clip != null && clip.isRunning()) {
+                        clip.stop();
+                    }
+                } else if (neededFinalScore <= 59) {
+                    JOptionPane.showMessageDialog(null, "你期末需要考 " + neededFinalScore + " 分加上一點點努力才會過");
+                }else if (neededFinalScore <=100) {
+                    clip = playSound("cheer.wav");
+                    JOptionPane.showMessageDialog(null, "你期末需要考 " + neededFinalScore + " 分加上八點點努力才會過");
+                    if (clip != null && clip.isRunning()) {
+                        clip.stop();
+                    }
+                } 
+                else {
+                    clip = playSound("fail.wav");
                     JOptionPane.showMessageDialog(null, "你期末需要神才會過");
-                    playSound("success.wav"); 
+                    if (clip != null && clip.isRunning()) {
+                        clip.stop();
+                    }
                 }
-
             }
         });
         buttonPanel.add(calculateButton);
@@ -491,6 +510,16 @@ class CourseDetailsDialog extends JDialog {
         panel.add(buttonPanel, gbc);
 
         add(panel);
+
+        // 添加視窗監聽器來停止音樂
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (clip != null && clip.isRunning()) {
+                    clip.stop();
+                }
+            }
+        });
     }
 
     private void addLabelAndField(JPanel panel, String labelText1, JTextField field1, String labelText2, JTextField field2, GridBagConstraints gbc, int row) {
@@ -556,6 +585,6 @@ class CourseDetailsDialog extends JDialog {
     }
 
     private String formatScore(double score) {
-        return score == -1 ? "未考" : String.format("%.2f", score);
+        return score == -1 ?"未考" : String.format("%.2f", score);
     }
 }
