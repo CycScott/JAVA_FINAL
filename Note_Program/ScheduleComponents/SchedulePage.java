@@ -6,37 +6,55 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+
 
 public class SchedulePage extends JFrame {
     private JTable table;
     private Object[][] data;
-    private String[] columnNames = {"時間","星期一", "星期二", "星期三", "星期四", "星期五"};
-    public ViewCoursePage viewCoursePage; // 修改這一行
+    private String[] columnNames = {"時間", "星期一", "星期二", "星期三", "星期四", "星期五"};
+    public ViewCoursePage viewCoursePage;
 
     public SchedulePage() {
         setTitle("課表");
-        setSize(600, 400); // 調整子頁面大小
+        setSize(700, 500); // 調整子頁面大小，以適應圖片和表格
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        data = new Object[][] {
-            {" 8.05~8.55 ", "","", "", "", ""},
-            {" 9.05~9.55 ", "","", "", "", ""},
-            {"10.10~11.00", "","", "", "", ""},
-            {"11.10~12.00", "","", "", "", ""},
-            {"12.10~13.00","午休","午休","午休","午休","午休"},
-            {"13.10~14.00", "","", "", "", ""},
-            {"14.10~15.00", "","", "", "", ""},
-            {"15.15~16.05", "","", "", "", ""},
-            {"16.20~17.10", "","", "", "", ""},
-            {"17.20~18.10", "","", "", "", ""},
-            {"18.20~19.10", "","", "", "", ""},
-            {"19.15~20.05", "","", "", "", ""},
-            {"20.10~21.00", "","", "", "", ""},
-            {"21.05~21.55", "","", "", "", ""},
+        data = new Object[][]{
+            {" 8.05~8.55 ", "", "", "", "", ""},
+            {" 9.05~9.55 ", "", "", "", "", ""},
+            {"10.10~11.00", "", "", "", "", ""},
+            {"11.10~12.00", "", "", "", "", ""},
+            {"12.10~13.00", "午休", "午休", "午休", "午休", "午休"},
+            {"13.10~14.00", "", "", "", "", ""},
+            {"14.10~15.00", "", "", "", "", ""},
+            {"15.15~16.05", "", "", "", "", ""},
+            {"16.20~17.10", "", "", "", "", ""},
+            {"17.20~18.10", "", "", "", "", ""},
+            {"18.20~19.10", "", "", "", "", ""},
+            {"19.15~20.05", "", "", "", "", ""},
+            {"20.10~21.00", "", "", "", "", ""},
+            {"21.05~21.55", "", "", "", "", ""},
+            {"", "", "", "", "", ""} // 新增一行用來放置圖片
         };
 
-        table = new JTable(data, columnNames);
+        DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        table = new JTable(model) {
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component c = super.prepareRenderer(renderer, row, column);
+                if (row == getRowCount() - 1 && column == getColumnCount() - 1) {
+                    // 设定右下角单元格的特殊高度
+                    ((JComponent) c).setPreferredSize(new Dimension(c.getWidth(), 100));
+                }
+                return c;
+            }
+        };
+        table.setRowHeight(14, 100); // 设置最后一行的高度
+        table.setDefaultRenderer(Object.class, new CustomCellRenderer());
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
 
@@ -44,16 +62,16 @@ public class SchedulePage extends JFrame {
         panel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        
+
         JButton addButton = new JButton("添加課程");
         buttonPanel.add(addButton);
 
         JButton deleteButton = new JButton("刪除課程");
         buttonPanel.add(deleteButton);
 
-        JButton viewButton = new JButton("查看課程"); // 新增這一行
-        buttonPanel.add(viewButton); // 新增這一行
-        
+        JButton viewButton = new JButton("查看課程");
+        buttonPanel.add(viewButton);
+
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
         addButton.addActionListener(new ActionListener() {
@@ -69,9 +87,9 @@ public class SchedulePage extends JFrame {
                 new DeleteCourseDialog(SchedulePage.this).setVisible(true);
             }
         });
-        
+
         viewCoursePage = new ViewCoursePage();
-        viewButton.addActionListener(new ActionListener() { // 新增這一段
+        viewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 viewCoursePage.setVisible(true);
@@ -88,14 +106,14 @@ public class SchedulePage extends JFrame {
         }
         table.repaint();
 
-        if (viewCoursePage != null) { // 新增這一段
+        if (viewCoursePage != null) {
             viewCoursePage.addCourseButton(courseName);
         }
     }
 
-    public void deleteCourse(int dayOfWeek, int startPeriod, int endPeriod, String courseName) { // 修改這一行
+    public void deleteCourse(int dayOfWeek, int startPeriod, int endPeriod, String courseName) {
         for (int i = startPeriod; i <= endPeriod; i++) {
-            if (data[i][dayOfWeek].equals(courseName)) { // 確認課程名稱匹配
+            if (data[i][dayOfWeek].equals(courseName)) {
                 data[i][dayOfWeek] = "";
             }
         }
@@ -105,7 +123,32 @@ public class SchedulePage extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(SchedulePage::new);
     }
+
+    // 自定义表格单元格渲染器
+    class CustomCellRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+            Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            // 在右下角单元格显示图片
+            if (row == table.getRowCount() - 1 && column == table.getColumnCount() - 1) {
+                JLabel label = new JLabel();
+                try {
+                    ImageIcon imageIcon = new ImageIcon("images.jpeg"); // 图片的路径
+                    Image image = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                    label.setIcon(new ImageIcon(image));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return label;
+            }
+            return cellComponent;
+        }
+    }
 }
+
 
 class AddCourseDialog extends JDialog {
     private JComboBox<String> dayOfWeekComboBox;
