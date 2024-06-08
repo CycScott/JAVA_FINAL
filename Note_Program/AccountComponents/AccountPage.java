@@ -72,7 +72,7 @@ public class AccountPage extends JFrame {
         constraints.gridx = 1;
         panel.add(categoryComboBox, constraints);
 
-        JLabel descriptionLabel = new JLabel("描述:");
+        JLabel descriptionLabel = new JLabel("備註:");
         constraints.gridx = 0;
         constraints.gridy = 3;
         panel.add(descriptionLabel, constraints);

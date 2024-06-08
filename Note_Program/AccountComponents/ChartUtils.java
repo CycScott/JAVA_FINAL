@@ -1,6 +1,8 @@
 package AccountComponents;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 import java.util.Map;
 
 public class ChartUtils {
@@ -16,11 +18,16 @@ public class ChartUtils {
     static class PieChartPanel extends JPanel {
         private Map<String, Double> data;
         private String title;
+        private List<Color> colors;
 
         public PieChartPanel(Map<String, Double> data, String title) {
             this.data = data;
             this.title = title;
             this.setPreferredSize(new Dimension(600, 400));
+            this.colors = List.of(
+                Color.RED, Color.BLUE, Color.GREEN, Color.ORANGE, Color.MAGENTA,
+                Color.CYAN, Color.YELLOW, Color.PINK, Color.LIGHT_GRAY, Color.GRAY
+            );
         }
 
         @Override
@@ -40,13 +47,15 @@ public class ChartUtils {
             double curValue = 0.0;
             int startAngle;
 
+            int colorIndex = 0;
             for (Map.Entry<String, Double> entry : data.entrySet()) {
                 startAngle = (int) (curValue * 360 / total);
                 int arcAngle = (int) (entry.getValue() * 360 / total);
 
-                g2.setColor(getRandomColor());
+                g2.setColor(colors.get(colorIndex % colors.size()));
                 g2.fillArc(x, y, diameter, diameter, startAngle, arcAngle);
                 curValue += entry.getValue();
+                colorIndex++;
 
                 // 中心點座標
                 double angle = Math.toRadians(startAngle + arcAngle / 2);
@@ -54,20 +63,20 @@ public class ChartUtils {
                 int centerY = y + diameter / 2;
 
                 // 計算文字位置
-                int labelX = (int) (centerX + diameter * 0.4 * Math.cos(angle));
-                int labelY = (int) (centerY + diameter * 0.4 * Math.sin(angle));
+                int labelX = (int) (centerX + diameter * 0.35 * Math.cos(angle));
+                int labelY = (int) (centerY + diameter * 0.35 * Math.sin(angle));
 
                 // 繪製類別標籤
                 g2.setColor(Color.BLACK);
-                g2.drawString(entry.getKey(), labelX, labelY);
+                FontMetrics fm = g2.getFontMetrics();
+                String label = entry.getKey();
+                int labelWidth = fm.stringWidth(label);
+                int labelHeight = fm.getAscent();
+                g2.drawString(label, labelX - labelWidth / 2, labelY + labelHeight / 2);
             }
 
             g2.setColor(Color.BLACK);
             g2.drawString(title, 20, 20);
-        }
-
-        private Color getRandomColor() {
-            return new Color((int) (Math.random() * 0x1000000));
         }
     }
 
