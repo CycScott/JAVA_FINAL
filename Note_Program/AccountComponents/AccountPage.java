@@ -215,40 +215,30 @@ public class AccountPage extends JFrame {
     }
 
     private void showPieChart() {
-        double totalIncome = 0;
-        double totalExpense = 0;
         Map<String, Double> incomeData = new HashMap<>();
         Map<String, Double> expenseData = new HashMap<>();
     
         for (Record record : records) {
             if (record.getCategory().equals("支出")) {
-                totalExpense += record.getAmount();
                 expenseData.put(record.getDescription(), expenseData.getOrDefault(record.getDescription(), 0.0) + record.getAmount());
             } else {
-                totalIncome += record.getAmount();
                 incomeData.put(record.getDescription(), incomeData.getOrDefault(record.getDescription(), 0.0) + record.getAmount());
             }
         }
     
-        Map<String, Double> dataToShow;
-        String title;
+        JPanel incomeChartPanel = ChartUtils.createPieChart(incomeData, "收入比例餅圖");
+        JPanel expenseChartPanel = ChartUtils.createPieChart(expenseData, "支出比例餅圖");
     
-        if (totalIncome > totalExpense) {
-            dataToShow = incomeData;
-            title = "收入比例餅圖";
-        } else {
-            dataToShow = expenseData;
-            title = "支出比例餅圖";
-        }
-    
-        JPanel chartPanel = ChartUtils.createPieChart(dataToShow, title);
-        JFrame chartFrame = new JFrame("餅圖");
+        JFrame chartFrame = new JFrame("收入和支出圓餅圖");
         chartFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        chartFrame.add(chartPanel);
+        chartFrame.setLayout(new GridLayout(1, 2)); // 在一行中排列兩個圖表
+        chartFrame.add(incomeChartPanel);
+        chartFrame.add(expenseChartPanel);
         chartFrame.pack();
         chartFrame.setLocationRelativeTo(null);
         chartFrame.setVisible(true);
     }
+    
     
 
     private void showBarChart() {

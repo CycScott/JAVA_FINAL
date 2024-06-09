@@ -24,7 +24,7 @@ public class ChartUtils {
         public PieChartPanel(Map<String, Double> data, String title) {
             this.data = data;
             this.title = title;
-            this.setPreferredSize(new Dimension(1000, 800));
+            this.setPreferredSize(new Dimension(600, 400));
             this.colorMap = new HashMap<>();
             initializeColors();
         }
@@ -79,7 +79,7 @@ public class ChartUtils {
                 g2.fillOval(innerX, innerY, innerDiameter, innerDiameter);
             }
 
-            g2.setColor(Color.WHITE);
+            g2.setColor(Color.BLACK);
             g2.drawString(title, 20, 20);
 
             // 顯示圖例
@@ -117,7 +117,7 @@ public class ChartUtils {
         public BarChartPanel(Map<String, Map<String, Double>> data, String title) {
             this.data = data;
             this.title = title;
-            this.setPreferredSize(new Dimension(1000, 800));
+            this.setPreferredSize(new Dimension(600, 400));
         }
 
         @Override
