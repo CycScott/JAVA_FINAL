@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import javax.swing.*;
 
 import DiaryComponents.Diary;
-import HealthComponents.Health;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -103,7 +102,10 @@ public class HealthPage extends JFrame {
         partComboBox.addActionListener(new ActionListener() {
             String newItem;
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) 
+            {
+                methodComboBox.removeAllItems();
+                methodComboBox.insertItemAt("+ 點擊新增", 0);
                 if ("手臂".equals(partComboBox.getSelectedItem()))
                 {
                     newItem = "二頭肌屈臂。啞鈴";
@@ -169,7 +171,8 @@ public class HealthPage extends JFrame {
             String newItem;
             @Override
             public void actionPerformed(ActionEvent e) {
-                if ("+ 點擊新增".equals(methodComboBox.getSelectedItem())) {
+                if ("+ 點擊新增".equals(methodComboBox.getSelectedItem())) 
+                {
                     newItem = JOptionPane.showInputDialog(panel, "請添加新健身項目：");
                     if (newItem != null && !newItem.trim().isEmpty()) 
                     {
@@ -183,7 +186,8 @@ public class HealthPage extends JFrame {
         });
 
         // 為 numberComboBox 添加事件監聽器
-        numberComboBox.addActionListener(new ActionListener() {
+        numberComboBox.addActionListener(new ActionListener()
+        {
             @Override
             public void actionPerformed(ActionEvent e) {
                     subTextArea.append(descriptionArea.getText()+(String)numberComboBox.getSelectedItem()+"\r\n");
@@ -247,7 +251,8 @@ public class HealthPage extends JFrame {
             }
         });
         // cancelbButton 的 Click 事件
-        cancelbButton.addActionListener(new ActionListener() {
+        cancelbButton.addActionListener(new ActionListener() 
+        {
             @Override
             public void actionPerformed(ActionEvent e) {
                 subTextArea.setText("");
@@ -255,7 +260,8 @@ public class HealthPage extends JFrame {
         });
 
         // checkButton 的 Click 事件
-        checkButton.addActionListener(new ActionListener() {
+        checkButton.addActionListener(new ActionListener() 
+        {
             @Override
             public void actionPerformed(ActionEvent e) {
                 openNewWindow();
@@ -267,7 +273,8 @@ public class HealthPage extends JFrame {
     {
         JFrame RecordView = new JFrame();
         JList<String> indexList = new JList<>();       // 用于显示索引的列表
-        JTextArea contentArea;         // 显示内容的文本区域
+        JTextArea contentArea;                         // 显示内容的文本区域
+        JButton deletedButton;
 
         RecordView.setTitle("Health Record Viewer");
         RecordView.setSize(600, 400);
@@ -310,10 +317,53 @@ public class HealthPage extends JFrame {
             }
         });
 
+        deletedButton = new JButton();
+        deletedButton.setText("刪除");
+
+        // deletedButton 的 Click 事件
+        deletedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                String selectedValue = indexList.getSelectedValue();
+                Boolean isDeleted = false;
+                if(selectedValue != null)   // 檢查是否有被選中
+                {
+                    if(JOptionPane.showConfirmDialog(RecordView, "將要刪除"+indexList.getSelectedValue()+"!", "注意",JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE)
+                == JOptionPane.YES_OPTION){
+                        isDeleted = true;
+                        for(Health heal : HealthList)
+                        {
+                            if(heal.getTitle().equals(indexList.getSelectedValue())){
+                                HealthList.remove(heal);
+                                heal = null;
+                                System.out.println("Remove Succes");                
+                                saveData();
+                                break;
+                            }
+                        }
+                    }
+                }
+                // 顯示更新
+                if(isDeleted)
+                {
+                    HealthListModel.clear();
+                    for (Health heal : HealthList) {
+                        HealthListModel.addElement(heal.getTitle());
+                    }
+                    indexList.setModel(HealthListModel); 
+                    indexList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                    contentArea.setText("");
+                }
+            }
+        });
+
         // 将组件添加到窗口
         RecordView.add(listScrollPane, BorderLayout.WEST);
         RecordView.add(textScrollPane, BorderLayout.CENTER);
-
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        buttonPanel.add(deletedButton);
+        RecordView.add(buttonPanel, BorderLayout.SOUTH);
         RecordView.setVisible(true);
     }
     
@@ -339,8 +389,9 @@ public class HealthPage extends JFrame {
                  }
                  saveData();
                  return;
-             }
+            }
          }
+         JOptionPane.showConfirmDialog(this, "紀錄已新增","提示",JOptionPane.CLOSED_OPTION, JOptionPane.INFORMATION_MESSAGE);
          Health temp = new Health(_title,_Content);
          HealthList.add(temp);
          saveData();
