@@ -3,8 +3,6 @@ package HealthComponents;
 import java.time.LocalDate;
 import javax.swing.*;
 
-import DiaryComponents.Diary;
-
 import java.awt.*;
 import java.awt.event.*;
 
@@ -95,8 +93,8 @@ public class HealthPage extends JFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH; // 使其占满整个区域
-        JTextArea subTextArea = new JTextArea(1, 10);
-        panel.add(new JScrollPane(subTextArea), gbc);
+        JTextArea submitTextArea = new JTextArea(1, 10);
+        panel.add(new JScrollPane(submitTextArea), gbc);
         
         // 為 partComboBox 添加事件監聽器
         partComboBox.addActionListener(new ActionListener() {
@@ -104,6 +102,8 @@ public class HealthPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
+                descriptionArea.setText("");
+                submitTextArea.setText("");
                 methodComboBox.removeAllItems();
                 methodComboBox.insertItemAt("+ 點擊新增", 0);
                 if ("手臂".equals(partComboBox.getSelectedItem()))
@@ -190,7 +190,7 @@ public class HealthPage extends JFrame {
         {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    subTextArea.append(descriptionArea.getText()+(String)numberComboBox.getSelectedItem()+"\r\n");
+                    submitTextArea.append(descriptionArea.getText()+(String)numberComboBox.getSelectedItem()+"\r\n");
             }
         });
 
@@ -243,11 +243,13 @@ public class HealthPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                String string = today.toString() + "的訓練菜單：\r\n";
+                String string = today.toString() + " 的訓練菜單：\r\n";
                 string += "========================\r\n";
-                string += "  " + subTextArea.getText();
+                string += "  " + submitTextArea.getText();
                 submitHealth(today.toString(), string);
-                subTextArea.setText("");
+
+                numberComboBox.setSelectedIndex(0);
+                submitTextArea.setText("");
             }
         });
         // cancelbButton 的 Click 事件
@@ -255,7 +257,7 @@ public class HealthPage extends JFrame {
         {
             @Override
             public void actionPerformed(ActionEvent e) {
-                subTextArea.setText("");
+                submitTextArea.setText("");
             }
         });
 
@@ -296,6 +298,7 @@ public class HealthPage extends JFrame {
 
         // 添加滚动面板
         JScrollPane listScrollPane = new JScrollPane(indexList);
+        listScrollPane.setPreferredSize(new Dimension(100, 400));
         JScrollPane textScrollPane = new JScrollPane(contentArea);
 
         // 监听列表选择事件

@@ -24,7 +24,7 @@ public class MainFrame extends JFrame {
         JButton dietButton = new JButton("飲食紀錄");
         JButton scheduleButton = new JButton("課表");
         JButton diaryButton = new JButton("日記");
-        JButton healthButton = new JButton("健康紀錄");
+        JButton healthButton = new JButton("健身紀錄");
 
         accountButton.addActionListener(new ButtonClickListener());
         dietButton.addActionListener(new ButtonClickListener());
@@ -60,7 +60,7 @@ public class MainFrame extends JFrame {
                 case "日記":
                     new DiaryPage();
                     break;
-                case "健康紀錄":
+                case "健身紀錄":
                     new HealthPage();
                     break;
             }
