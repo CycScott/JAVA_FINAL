@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 public class ChartUtils {
 
@@ -18,16 +19,27 @@ public class ChartUtils {
     static class PieChartPanel extends JPanel {
         private Map<String, Double> data;
         private String title;
-        private List<Color> colors;
+        private Map<String, Color> colorMap;
 
         public PieChartPanel(Map<String, Double> data, String title) {
             this.data = data;
             this.title = title;
-            this.setPreferredSize(new Dimension(600, 400));
-            this.colors = List.of(
-                Color.RED, Color.BLUE, Color.GREEN, Color.ORANGE, Color.MAGENTA,
-                Color.CYAN, Color.YELLOW, Color.PINK, Color.LIGHT_GRAY, Color.GRAY
+            this.setPreferredSize(new Dimension(1000, 800));
+            this.colorMap = new HashMap<>();
+            initializeColors();
+        }
+
+        private void initializeColors() {
+            List<Color> colors = List.of(
+                Color.GREEN, Color.MAGENTA, Color.BLUE, Color.ORANGE, Color.CYAN,
+                Color.YELLOW, Color.PINK, Color.LIGHT_GRAY, Color.GRAY, Color.RED
             );
+
+            int colorIndex = 0;
+            for (String key : data.keySet()) {
+                colorMap.put(key, colors.get(colorIndex % colors.size()));
+                colorIndex++;
+            }
         }
 
         @Override
@@ -47,36 +59,54 @@ public class ChartUtils {
             double curValue = 0.0;
             int startAngle;
 
-            int colorIndex = 0;
             for (Map.Entry<String, Double> entry : data.entrySet()) {
                 startAngle = (int) (curValue * 360 / total);
                 int arcAngle = (int) (entry.getValue() * 360 / total);
 
-                g2.setColor(colors.get(colorIndex % colors.size()));
+                g2.setColor(colorMap.get(entry.getKey()));
                 g2.fillArc(x, y, diameter, diameter, startAngle, arcAngle);
                 curValue += entry.getValue();
-                colorIndex++;
-
-                // 中心點座標
-                double angle = Math.toRadians(startAngle + arcAngle / 2);
-                int centerX = x + diameter / 2;
-                int centerY = y + diameter / 2;
-
-                // 計算文字位置
-                int labelX = (int) (centerX + diameter * 0.35 * Math.cos(angle));
-                int labelY = (int) (centerY + diameter * 0.35 * Math.sin(angle));
-
-                // 繪製類別標籤
-                g2.setColor(Color.BLACK);
-                FontMetrics fm = g2.getFontMetrics();
-                String label = entry.getKey();
-                int labelWidth = fm.stringWidth(label);
-                int labelHeight = fm.getAscent();
-                g2.drawString(label, labelX - labelWidth / 2, labelY + labelHeight / 2);
             }
 
-            g2.setColor(Color.BLACK);
+            // 繪製內圓來表示現金餘額部分
+            Double cashValue = data.get("現金餘額");
+            if (cashValue != null) {
+                int innerDiameter = (int) (diameter * Math.sqrt(cashValue / total));
+                int innerX = x + (diameter - innerDiameter) / 2;
+                int innerY = y + (diameter - innerDiameter) / 2;
+
+                g2.setColor(colorMap.get("現金餘額")); // 使用對應的顏色
+                g2.fillOval(innerX, innerY, innerDiameter, innerDiameter);
+            }
+
+            g2.setColor(Color.WHITE);
             g2.drawString(title, 20, 20);
+
+            // 顯示圖例
+            int legendX = width - 150;
+            int legendY = 50;
+            int legendWidth = 10;
+            int legendHeight = 10;
+            for (Map.Entry<String, Double> entry : data.entrySet()) {
+                g2.setColor(colorMap.get(entry.getKey()));
+                g2.fillRect(legendX, legendY, legendWidth, legendHeight);
+
+                g2.setColor(Color.BLACK);
+                g2.drawRect(legendX, legendY, legendWidth, legendHeight);
+                g2.drawString(String.format("%s %.2f%%", entry.getKey(), entry.getValue() * 100 / total),
+                              legendX + 15, legendY + 10);
+
+                legendY += 20;
+            }
+
+            // 顯示內圓標籤
+            if (cashValue != null) {
+                g2.setColor(colorMap.get("現金餘額"));
+                g2.fillRect(legendX, legendY, legendWidth, legendHeight);
+                g2.setColor(Color.BLACK);
+                g2.drawRect(legendX, legendY, legendWidth, legendHeight);
+                g2.drawString(String.format("現金餘額 %.2f%%", cashValue * 100 / total), legendX + 15, legendY + 10);
+            }
         }
     }
 
@@ -87,7 +117,7 @@ public class ChartUtils {
         public BarChartPanel(Map<String, Map<String, Double>> data, String title) {
             this.data = data;
             this.title = title;
-            this.setPreferredSize(new Dimension(600, 400));
+            this.setPreferredSize(new Dimension(1000, 800));
         }
 
         @Override
@@ -104,7 +134,7 @@ public class ChartUtils {
             g2.setColor(Color.BLACK);
             g2.drawString(title, 20, 20);
 
-            int barWidth = width / (data.size() * 4); // 更新這裡，使條形圖顯示更加合理
+            int barWidth = width / (data.size() * 4);
             int maxBarHeight = height - 100;
 
             int x = 50;
@@ -125,7 +155,7 @@ public class ChartUtils {
                     g2.drawRect(x, y - barHeight, barWidth, barHeight);
 
                     g2.drawString(month, x, y + 20);
-                    g2.drawString(category, x, y + 35); // 在條形圖下方繪制類別名稱
+                    g2.drawString(category, x, y + 35);
 
                     x += barWidth + 10;
                 }
@@ -145,5 +175,4 @@ public class ChartUtils {
             return new Color((int) (Math.random() * 0x1000000));
         }
     }
-
 }
