@@ -103,7 +103,7 @@ public class HealthPage extends JFrame {
             public void actionPerformed(ActionEvent e) 
             {
                 descriptionArea.setText("");
-                submitTextArea.setText("");
+                //numberComboBox.setSelectedIndex(0);
                 methodComboBox.removeAllItems();
                 methodComboBox.insertItemAt("+ 點擊新增", 0);
                 if ("手臂".equals(partComboBox.getSelectedItem()))
@@ -245,7 +245,7 @@ public class HealthPage extends JFrame {
             {
                 String string = today.toString() + " 的訓練菜單：\r\n";
                 string += "========================\r\n";
-                string += "  " + submitTextArea.getText();
+                string += submitTextArea.getText();
                 submitHealth(today.toString(), string);
 
                 numberComboBox.setSelectedIndex(0);
