@@ -311,7 +311,7 @@ public class HealthPage extends JFrame {
                     for (Health heal : HealthList) 
                     {
                         contentArea.setText(heal.getContent());
-                        if(heal.getTitle().equals(explorer.getSelectedValue())){
+                        if(heal.getTitle().equals(selectedValue)){
                             contentArea.setText(heal.getContent());
                             return;
                         }
