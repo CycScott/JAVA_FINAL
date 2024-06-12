@@ -117,6 +117,12 @@ public class SchedulePage extends JFrame {
     }
 
     public void addCourse(int dayOfWeek, int startPeriod, int endPeriod, String courseName) {
+        // 检查是否需要调整课程时间
+        if (startPeriod >= 4) {
+            startPeriod++;
+            endPeriod++;
+        }
+
         for (int i = startPeriod; i <= endPeriod; i++) {
             model.setValueAt(courseName, i, dayOfWeek);
         }
@@ -129,6 +135,12 @@ public class SchedulePage extends JFrame {
     }
 
     public void deleteCourse(int dayOfWeek, int startPeriod, int endPeriod, String courseName) {
+        // 检查是否需要调整课程时间
+        if (startPeriod >= 4) {
+            startPeriod++;
+            endPeriod++;
+        }
+
         for (int i = startPeriod; i <= endPeriod; i++) {
             if (courseName.equals(model.getValueAt(i, dayOfWeek))) {
                 model.setValueAt("", i, dayOfWeek);
@@ -345,7 +357,6 @@ class DeleteCourseDialog extends JDialog {
         add(box);
     }
 }
-
 
 
 
