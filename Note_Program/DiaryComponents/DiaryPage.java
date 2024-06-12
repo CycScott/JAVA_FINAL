@@ -49,7 +49,6 @@ public class DiaryPage extends JFrame {
         
 
         diaryTitle.setPreferredSize(new Dimension(200, 25));
-        _constraints.anchor = GridBagConstraints.PAGE_END;
         _constraints.gridx = 3;
         _constraints.gridy = 1;
         _panel.add(diaryTitle, _constraints);
