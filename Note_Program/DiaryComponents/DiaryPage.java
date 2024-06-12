@@ -3,6 +3,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class DiaryPage extends JFrame {
     ArrayList<Diary> DiaryList;
@@ -11,7 +13,7 @@ public class DiaryPage extends JFrame {
 
     JLabel titleLabel = new JLabel("標題: ");
     JTextArea diaryArea = new JTextArea(10, 20);
-    JTextArea diaryTitle = new JTextArea(2, 20);
+    JTextArea diaryTitle = new JTextArea(1, 20);
     JButton submitButton = new JButton("儲存");
     JButton deleteButton = new JButton("刪除");
     JList<String> explorer = new JList<>();
@@ -88,6 +90,12 @@ public class DiaryPage extends JFrame {
     }
 
     public void updateExplorer(){
+        Collections.sort(DiaryList, new Comparator<Diary>() {
+            @Override
+            public int compare(Diary d1, Diary d2) {
+                return d1.getTitle().compareTo(d2.getTitle());
+            }
+        });
         if (!DiaryList.isEmpty()) {
             DiaryListModel.clear();
             for (Diary dry : DiaryList) {
@@ -100,6 +108,10 @@ public class DiaryPage extends JFrame {
     }
     
     public void submitDiary(JTextArea _title,JTextArea _Content){
+       if(_title.getText().equals("")){
+            JOptionPane.showMessageDialog(this, "標題不能為空", "注意", JOptionPane.WARNING_MESSAGE);
+            return;
+       }
        for(Diary dry : DiaryList){
             if(dry.getTitle().equals(_title.getText())){
                 if(JOptionPane.showConfirmDialog(this, "將會覆蓋"+_title.getText()+"!", "注意",JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE)
