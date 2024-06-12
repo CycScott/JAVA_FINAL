@@ -60,11 +60,12 @@ public class DiaryPage extends JFrame {
         _constraints.gridx = 4;
         _constraints.gridy = 8;
         _constraints.anchor = GridBagConstraints.LAST_LINE_END;
+        _constraints.gridwidth = 1;
         _panel.add(submitButton, _constraints);
 
         _constraints.gridx = 3;
+        _constraints.gridy = 8;
         _panel.add(deleteButton, _constraints);
-
 
         explorerScroller.setPreferredSize(new Dimension(150, 200));
         _constraints.gridx = 0;
